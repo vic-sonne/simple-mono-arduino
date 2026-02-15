@@ -52,14 +52,6 @@ void setup()
 void loop()
 {
   MIDI.read();
-
-  // control-rate hardware update
-  static uint32_t last_ctrl = 0;
-  uint32_t now = millis();
-  if (now - last_ctrl > 2)
-  {
-    last_ctrl = now;
-    g_hw.UpdateControls();
-    g_vm.UpdateParamsFromHardware(g_hw);
-  }
+  g_hw.UpdateControls();
+  g_vm.UpdateParamsFromHardware(g_hw);
 }
