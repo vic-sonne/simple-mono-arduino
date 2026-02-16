@@ -10,7 +10,6 @@ VoiceManager g_vm;
 
 static void AudioCallback(float **in, float **out, size_t size)
 {
-  // optional control-rate scheduling inside here, but at minimum:
   g_vm.ProcessBlock(out, size);
 }
 
@@ -36,7 +35,7 @@ void handleNoteOff(byte ch, byte note, byte vel)
 
 void setup()
 {
-  g_hw.Init();
+  g_hw.Init(1000);
   float sr = DAISY.get_samplerate();
 
   g_vm.Init(sr);

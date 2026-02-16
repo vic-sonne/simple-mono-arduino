@@ -1,51 +1,52 @@
 #include "SynthHardware.h"
 
-void SynthHardware::Init()
+void SynthHardware::Init(float ControlRate)
 {
     hw_ = DAISY.init(DAISY_SEED, AUDIO_SR_48K);
-    sample_rate_ = DAISY.get_samplerate();
+    sample_rate_ = DAISY.AudioSampleRate();
+    control_rate_ = ControlRate;
 
     /* VCO */
-    osc_param_ctl_.Init(OSC_PARAM_POT, sample_rate_);
+    osc_param_ctl_.Init(OSC_PARAM_POT, control_rate_);
     osc_param_param_.Init(osc_param_ctl_, -1, 1.f, Parameter::LINEAR);
-    env_osc_amt_ctl_.Init(OSC_ENV_AMT_POT, sample_rate_);
+    env_osc_amt_ctl_.Init(OSC_ENV_AMT_POT, control_rate_);
     env_osc_amt_param_.Init(env_osc_amt_ctl_, -1, 1.f, Parameter::LINEAR);
-    lfo_osc_amt_ctl_.Init(OSC_LFO_AMT_POT, sample_rate_);
+    lfo_osc_amt_ctl_.Init(OSC_LFO_AMT_POT, control_rate_);
     lfo_osc_amt_param_.Init(lfo_osc_amt_ctl_, 0.f, 1.f, Parameter::LINEAR);
-    osc_tri_sw_.Init(sample_rate_, true, OSC_TRI_SW, INPUT_PULLUP);
-    osc_sq_sw_.Init(sample_rate_, true, OSC_SQ_SW, INPUT_PULLUP);
+    osc_tri_sw_.Init(control_rate_, true, OSC_TRI_SW, INPUT_PULLUP);
+    osc_sq_sw_.Init(control_rate_, true, OSC_SQ_SW, INPUT_PULLUP);
 
     /* VCF */
-    cutoff_ctl_.Init(CUTOFF_POT, sample_rate_);
+    cutoff_ctl_.Init(CUTOFF_POT, control_rate_);
     cutoff_param_.Init(cutoff_ctl_, 20.f, 18000.f, Parameter::LOGARITHMIC);
-    reso_ctl_.Init(RESO_POT, sample_rate_);
+    reso_ctl_.Init(RESO_POT, control_rate_);
     reso_param_.Init(reso_ctl_, 0.f, 0.93f, Parameter::LINEAR);
     /* VCF MOD */
-    env_cutoff_amt_ctl_.Init(ENV_CUTOFF_AMT_POT, sample_rate_);
+    env_cutoff_amt_ctl_.Init(ENV_CUTOFF_AMT_POT, control_rate_);
     env_cutoff_amt_param_.Init(env_cutoff_amt_ctl_, -1.f, 1.f, Parameter::LINEAR);
-    lfo_cutoff_amt_ctl_.Init(LFO_CUTOFF_AMT_POT, sample_rate_);
+    lfo_cutoff_amt_ctl_.Init(LFO_CUTOFF_AMT_POT, control_rate_);
     lfo_cutoff_amt_param_.Init(lfo_cutoff_amt_ctl_, 0.f, 1.f, Parameter::LINEAR);
 
     /* ADSR */
-    a_ctl_.Init(ATTACK_POT, sample_rate_);
-    d_ctl_.Init(DECAY_POT, sample_rate_);
-    s_ctl_.Init(SUSTAIN_POT, sample_rate_);
-    r_ctl_.Init(RELEASE_POT, sample_rate_);
+    a_ctl_.Init(ATTACK_POT, control_rate_);
+    d_ctl_.Init(DECAY_POT, control_rate_);
+    s_ctl_.Init(SUSTAIN_POT, control_rate_);
+    r_ctl_.Init(RELEASE_POT, control_rate_);
     a_param_.Init(a_ctl_, 0, 1.f, Parameter::LINEAR);
     d_param_.Init(d_ctl_, 0, 1.f, Parameter::LINEAR);
     s_param_.Init(s_ctl_, 0, 1.f, Parameter::LINEAR);
     r_param_.Init(r_ctl_, 0, 1.f, Parameter::LINEAR);
 
     /* AMP MODE */
-    adsr_sw_.Init(sample_rate_, true, AMP_ADSR_MODE_SW, INPUT_PULLUP);
-    drone_sw_.Init(sample_rate_, true, AMP_DRONE_MODE_SW, INPUT_PULLUP);
+    adsr_sw_.Init(control_rate_, true, AMP_ADSR_MODE_SW, INPUT_PULLUP);
+    drone_sw_.Init(control_rate_, true, AMP_DRONE_MODE_SW, INPUT_PULLUP);
 
     /* LFO */
-    lfo_rate_ctl_.Init(LFO_RATE_POT, sample_rate_);
+    lfo_rate_ctl_.Init(LFO_RATE_POT, control_rate_);
     lfo_rate_param_.Init(lfo_rate_ctl_, 0.f, 1.f, Parameter::LINEAR);
-    lfo_sig_rand_sw_.Init(sample_rate_, true, LFO_SIG_RAND_SW, INPUT_PULLUP);
-    lfo_shape_1_sw_.Init(sample_rate_, true, LFO_SHAPE_1_SW, INPUT_PULLUP);
-    lfo_shape_3_sw_.Init(sample_rate_, true, LFO_SHAPE_3_SW, INPUT_PULLUP);
+    lfo_sig_rand_sw_.Init(control_rate_, true, LFO_SIG_RAND_SW, INPUT_PULLUP);
+    lfo_shape_1_sw_.Init(control_rate_, true, LFO_SHAPE_1_SW, INPUT_PULLUP);
+    lfo_shape_3_sw_.Init(control_rate_, true, LFO_SHAPE_3_SW, INPUT_PULLUP);
 }
 
 void SynthHardware::UpdateControls()

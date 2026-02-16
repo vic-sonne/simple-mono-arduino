@@ -72,7 +72,7 @@ static inline float DeadbandBipolar(float x, float db);
 class SynthHardware
 {
 public:
-  void Init();
+  void Init(float ControlRate);
   void UpdateControls(); // call at control rate
 
   float GetPot(PotId id) const;
@@ -85,6 +85,7 @@ public:
 private:
   DaisyHardware hw_;
   float sample_rate_;
+  float control_rate_;
 
   /********             VCO             ********/
   // AnalogControl + Parameter for each pot
