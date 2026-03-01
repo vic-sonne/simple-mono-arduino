@@ -27,7 +27,7 @@ private:
     OscType osc_type_;
     float osc_param_;
     float env_osc_depth_, lfo_osc_depth_;
-    float fold_amt_, sync_amt_, pw_amt_;
+    float pw_amt_;
     float ProcessPair2Anlg(float freq, float env, float lfo);
     float ProcessPair2Dgtl(float freq, float env, float lfo);
     void UpdatePair2Anlg();

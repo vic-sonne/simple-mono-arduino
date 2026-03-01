@@ -1,6 +1,6 @@
 #include "vs_osc.h"
 
-#define OSC_PAIR 3
+#define OSC_PAIR 2
 
 void VS_Osc::Init(float sample_rate)
 {
@@ -46,7 +46,7 @@ float VS_Osc::ProcessSquare(float freq, float env, float lfo)
     return osc_.Process();
 }
 
-float VS_Osc::ProcessPair2Anlg(float freq, float env, float lfo)
+float VS_Osc::ProcessPair2Dgtl(float freq, float env, float lfo)
 {
     const float maxModOct = 5.f;
     const float maxSemi = 38.0f;
@@ -57,37 +57,23 @@ float VS_Osc::ProcessPair2Anlg(float freq, float env, float lfo)
     return saw_osc_.Process();
 }
 
-float VS_Osc::ProcessPair2Dgtl(float freq, float env, float lfo)
+float VS_Osc::ProcessPair2Anlg(float freq, float env, float lfo)
 {
-    if (osc_param_ > 0.f)
-    {
-        osc_.SetFreq(freq);
-        const float maxModOct = 5.f;
-        const float maxSemi = 38.0f;
-        const float base_oct = sync_amt_ * maxModOct;
-        const float env_oct = (env * env_osc_depth_ * maxSemi) / 12.f;
-        const float lfo_oct = lfo_osc_depth_ * maxModOct * lfo;
-        float total_oct = base_oct + env_oct + lfo_oct;
-        total_oct = fclamp(total_oct, 0.f, maxModOct);
-        const float ratio = exp2f(total_oct);
-        osc_.SetSyncFreq(freq * ratio);
-        return osc_.Process();
-    }
-    else if (osc_param_ < 0.f)
-    {
-        osc_.SetFreq(freq);
-        osc_.SetSyncFreq(freq);
-        float total_fold_amt = fold_amt_ + env * env_osc_depth_ + lfo * lfo_osc_depth_;
-        total_fold_amt = fclamp(total_fold_amt, 0.f, 1.f);
-        float smp = osc_.Process();
-        return WaveFold(smp, total_fold_amt);
-    }
-    else
-    {
-        osc_.SetFreq(freq);
-        osc_.SetSyncFreq(freq);
-        return osc_.Process();
-    }
+    osc_.SetFreq(freq);
+    float mod_step = osc_param_ + env * env_osc_depth_ + lfo * lfo_osc_depth_;
+    mod_step = fclamp(mod_step, -1.f, 1.f);
+
+    const float maxModOct = 3.3f;
+    float total_oct = mod_step * maxModOct;
+    total_oct = fclamp(total_oct, 0.f, maxModOct);
+    const float ratio = exp2f(total_oct);
+    osc_.SetSyncFreq(freq * ratio);
+
+    float smp = osc_.Process();
+
+    float total_fold_amt = -mod_step;
+    total_fold_amt = fclamp(total_fold_amt, 0.f, 1.f);
+    return WaveFold(smp, total_fold_amt);
 }
 
 float VS_Osc::ProcessPair3Anlg(float freq, float env, float lfo)
@@ -239,7 +225,7 @@ void VS_Osc::UpdateParamsFromHardware(const SynthHardware &hw)
     }
 }
 
-void VS_Osc::UpdatePair2Anlg()
+void VS_Osc::UpdatePair2Dgtl()
 {
     // osc_param_ sweeps -1 to 1. on that interval, we want our waveshape
     // to go from 1 to 0
@@ -257,27 +243,11 @@ void VS_Osc::UpdatePair2Anlg()
     }
 }
 
-void VS_Osc::UpdatePair2Dgtl()
+void VS_Osc::UpdatePair2Anlg()
 {
     osc_.SetWaveshape(0);
     osc_.SetSync(true);
     osc_.SetPW(.5f);
-    if (osc_param_ > 0.f)
-    {
-        // used to remap 0.5..1 to 0..1
-        // now need to remap 0..1 to 0..1
-        sync_amt_ = osc_param_;
-    }
-    else if (osc_param_ < 0.f)
-    {
-        // now need to remap -1..0 to 1..0
-        fold_amt_ = -osc_param_;
-    }
-    else
-    {
-        fold_amt_ = 0;
-        sync_amt_ = 0;
-    }
 }
 
 void VS_Osc::UpdatePair3Anlg()
