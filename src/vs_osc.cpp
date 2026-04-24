@@ -76,6 +76,11 @@ float VS_Osc::ProcessPair2Anlg(float freq, float env, float lfo)
     return WaveFold(smp, total_fold_amt);
 }
 
+/**
+ * Sawtooth Oscillator
+ * Adds hard sync when CW turn of shape knob (or equivalent LFO or ENV mod)
+ * Adds waveshaping + wavefolding in the reciprocal CCW
+ */
 float VS_Osc::ProcessPair3Anlg(float freq, float env, float lfo)
 {
     float x = osc_param_;
@@ -103,6 +108,11 @@ float VS_Osc::ProcessPair3Anlg(float freq, float env, float lfo)
     return folded;
 }
 
+/**
+ * tri-saw-notch wave with analog-style FM
+ * the shape is determined by the shape knob (control loop)
+ * in the update loop, we compute the FM based on the LFO and ENV
+ */
 float VS_Osc::ProcessPair3Dgtl(float freq, float env, float lfo)
 {
     const float maxModOct = 5.f;
