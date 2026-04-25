@@ -1,6 +1,8 @@
 #include "vs_osc.h"
 
-#define OSC_PAIR 2
+#ifndef OSC_BANK
+#define OSC_BANK 2
+#endif
 
 void VS_Osc::Init(float sample_rate)
 {
@@ -20,14 +22,14 @@ float VS_Osc::Process(float frequency, float env, float lfo)
         samp = ProcessSquare(frequency, env, lfo);
         break;
     case OSC_TYPE_TRI:
-#if OSC_PAIR == 2
+#if OSC_BANK == 2
         samp = ProcessPair2Dgtl(frequency, env, lfo);
 #else
         samp = ProcessPair3Dgtl(frequency, env, lfo);
 #endif
         break;
     default:
-#if OSC_PAIR == 2
+#if OSC_BANK == 2
         samp = ProcessPair2Anlg(frequency, env, lfo);
 #else
         samp = ProcessPair3Anlg(frequency, env, lfo);
@@ -219,14 +221,14 @@ void VS_Osc::UpdateParamsFromHardware(const SynthHardware &hw)
         osc_.SetWaveshape(1);
         break;
     case OSC_TYPE_SAW:
-#if OSC_PAIR == 2
+#if OSC_BANK == 2
         UpdatePair2Anlg();
 #else
         UpdatePair3Anlg();
 #endif
         break;
     case OSC_TYPE_TRI:
-#if OSC_PAIR == 2
+#if OSC_BANK == 2
         UpdatePair2Dgtl();
 #else
         UpdatePair3Dgtl();
