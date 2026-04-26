@@ -65,7 +65,7 @@ float VS_Osc::ProcessPair2Dgtl(float freq, float env, float lfo)
 }
 
 /**
- * Sawtooth Oscillator
+ * Triangle Oscillator
  * Adds hard sync when CW turn of shape knob (or equivalent LFO or ENV mod)
  * Adds waveshaping + wavefolding in the reciprocal CCW
  */
@@ -88,6 +88,10 @@ float VS_Osc::ProcessPair2Anlg(float freq, float env, float lfo)
     return WaveFold(smp, total_fold_amt);
 }
 
+/**
+ * Sawtoth oscillator with two types of waveshaping when turning the shape CW or CCW
+ * Inspired by plaits green moode 2
+ */
 float VS_Osc::ProcessPair3Anlg(float freq, float env, float lfo)
 {
     float x = osc_param_;
@@ -115,13 +119,17 @@ float VS_Osc::ProcessPair3Anlg(float freq, float env, float lfo)
     return folded;
 }
 
+/**
+ * TRI wave with crude analog-style FM
+ * The shape know does the fine tune
+ */
 float VS_Osc::ProcessPair3Dgtl(float freq, float env, float lfo)
 {
     const float maxModOct = 5.f;
     const float maxSemi = 38.0f;
     float env_oct = (env * env_osc_depth_ * maxSemi) / 12.f;
     float lfo_oct = lfo_osc_depth_ * maxModOct * lfo;
-    float frequency = freq * exp2f(env_oct + lfo_oct);
+    float frequency = freq * exp2f(env_oct + lfo_oct + osc_param_);
     frequency = fclamp(frequency, 20, 18000);
     osc_.SetFreq(frequency);
     osc_.SetSyncFreq(frequency);
